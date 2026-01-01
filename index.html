@@ -1,209 +1,436 @@
-rm: uppercase;
-            letter-spacing: 0.1em;
-            font-weight: 700;
-            font-size: 0.75rem;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PI-OS // NEXUS COMMAND</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --primary-glow: rgba(0, 242, 255, 0.4);
+            --secondary: #7000ff;
+            --danger: #ff0055;
+            --bg: #030508;
+            --card-bg: rgba(13, 17, 26, 0.8);
+            --border: rgba(255, 255, 255, 0.05);
+        }
+        
+        body {
+            background-color: var(--bg);
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 242, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(112, 0, 255, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Login Screen Overlay */
+        #login-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .page {
+            display: none;
+            height: 100%;
+            overflow-y: auto;
+            padding-right: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page::-webkit-scrollbar { width: 4px; }
+        .page::-webkit-scrollbar-track { background: transparent; }
+        .page::-webkit-scrollbar-thumb { background: rgba(0, 242, 255, 0.1); border-radius: 2px; }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 242, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-link {
             position: relative;
+            padding: 8px 12px;
+            color: #94a3b8;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @media (min-width: 768px) {
+            .nav-link { font-size: 0.875rem; padding: 8px 16px; }
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 8px;
+            right: 8px;
+            height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            border-radius: 2px;
+        }
+
+        .cyber-btn {
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.7rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary);
+            color: var(--bg);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .btn-danger {
+            background: rgba(255, 0, 85, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 0, 85, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.3);
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1;
+        }
+
+        @media (min-width: 768px) {
+            .stat-value { font-size: 2.5rem; }
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .progress-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 4px;
             overflow: hidden;
         }
 
-        .cyber-button-cyan {
-            border: 1px solid var(--cyan);
-            color: var(--cyan);
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #0066ff);
+            box-shadow: 0 0 10px var(--primary-glow);
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .cyber-button-cyan:hover {
-            background: var(--cyan);
-            color: black;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+        .core-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 10px;
         }
-
-        .cyber-button-pink {
-            border: 1px solid var(--pink);
-            color: var(--pink);
-        }
-
-        .cyber-button-pink:hover {
-            background: var(--pink);
+        
+        .login-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
             color: white;
-            box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+            outline: none;
+            transition: all 0.2s;
         }
-
-        .glow-cyan { text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-
-        @keyframes noise {
-            0% { transform: translate(0,0) }
-            10% { transform: translate(-5%,-5%) }
-            20% { transform: translate(-10%,5%) }
-            30% { transform: translate(5%,-10%) }
-            40% { transform: translate(-5%,15%) }
-            50% { transform: translate(-10%,5%) }
-            60% { transform: translate(15%,0) }
-            70% { transform: translate(0,10%) }
-            80% { transform: translate(-15%,0) }
-            90% { transform: translate(10%,5%) }
-            100% { transform: translate(5%,0) }
-        }
-
-        .glitch-bg {
-            position: absolute;
-            inset: 0;
-            background: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.05;
-            pointer-events: none;
-            animation: noise 0.2s infinite;
-        }
-
-        .stat-circle {
-            transition: stroke-dashoffset 1s ease-out;
+        
+        .login-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
-    <div class="cyber-grid"></div>
-    <div class="scanline"></div>
-
-    <div class="w-full max-w-6xl h-[90vh] flex flex-col gap-4 relative">
-        <!-- TOP NAV -->
-        <header class="flex justify-between items-end border-b border-cyan-500/20 pb-4">
-            <div>
-                <div class="text-[10px] mono text-cyan-500/60 uppercase tracking-[0.4em] mb-1">System Core Interface // v4.0.2</div>
-                <h1 class="text-4xl font-black tracking-tighter italic uppercase text-white leading-none">PI-OS <span class="text-cyan-500 glow-cyan">MK-IV</span></h1>
+<body class="p-3 md:p-8">
+    <!-- AUTH SCREEN -->
+    <div id="login-screen">
+        <div class="glass-card p-8 w-full max-w-sm space-y-6 mx-4">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 bg-cyan-500 rounded-2xl mx-auto flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.4)] mb-4">
+                    <i data-lucide="lock" class="w-8 h-8 text-black"></i>
+                </div>
+                <h1 class="text-xl font-bold uppercase tracking-widest text-white">Security Check</h1>
+                <p class="text-slate-500 text-xs uppercase font-bold">Authorized Access Only</p>
             </div>
-            <div class="flex gap-6 items-end">
-                <div class="text-right">
-                    <div class="text-[10px] mono text-slate-500 uppercase tracking-widest mb-1">Uptime Duration</div>
-                    <div id="uptime" class="text-xl font-bold mono text-white leading-none">00d 00h 00m</div>
-                </div>
-                <div class="w-px h-8 bg-cyan-500/20"></div>
-                <div class="text-right">
-                    <div class="text-[10px] mono text-slate-500 uppercase tracking-widest mb-1">Local Node Time</div>
-                    <div id="clock" class="text-xl font-bold mono text-cyan-500 leading-none">00:00:00</div>
-                </div>
+            <div class="space-y-4">
+                <input type="text" id="username" placeholder="USERNAME" class="login-input w-full text-sm mono">
+                <input type="password" id="password" placeholder="PASSWORD" class="login-input w-full text-sm mono">
+                <button onclick="handleLogin()" class="cyber-btn btn-primary w-full py-4 mt-2">
+                    <i data-lucide="key" class="w-4 h-4"></i> Access System
+                </button>
             </div>
-        </header>
-
-        <!-- MAIN GRID -->
-        <div class="grid grid-cols-12 grid-rows-6 gap-4 flex-1 min-h-0">
-            <!-- CPU PANEL -->
-            <div class="col-span-12 md:col-span-8 row-span-3 panel p-6 overflow-hidden">
-                <div class="glitch-bg"></div>
-                <div class="flex justify-between items-start mb-4 relative z-10">
-                    <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-cyan-500/70 flex items-center gap-2">
-                        <i data-lucide="cpu" class="w-4 h-4"></i> Processor Load State
-                    </h2>
-                    <div class="px-2 py-0.5 border border-cyan-500/30 rounded text-[10px] mono text-cyan-500">REALTIME_POLLING</div>
-                </div>
-                <div class="flex items-baseline gap-4 relative z-10">
-                    <div id="cpu-val" class="text-8xl font-black italic tracking-tighter text-white">0.0<span class="text-2xl text-slate-600 font-normal ml-2">%</span></div>
-                    <div class="flex-1 h-2 bg-slate-900 rounded-full overflow-hidden">
-                        <div id="cpu-bar" class="h-full bg-cyan-500 shadow-[0_0_15px_#00f2ff] transition-all duration-500" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- THERMAL PANEL -->
-            <div class="col-span-12 md:col-span-4 row-span-3 panel p-6 flex flex-col justify-between">
-                <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-cyan-500/70 flex items-center gap-2">
-                    <i data-lucide="thermometer" class="w-4 h-4"></i> Thermal Index
-                </h2>
-                <div class="flex flex-col items-center py-4">
-                    <div id="temp-val" class="text-6xl font-black italic tracking-tighter text-white">46.1<span class="text-xl text-slate-600 font-normal ml-1">°C</span></div>
-                    <div class="text-[10px] mono text-slate-500 mt-2 uppercase tracking-widest">Core Temperature Nominal</div>
-                </div>
-                <div class="flex gap-1 h-2">
-                    <div class="flex-1 bg-cyan-500/40"></div>
-                    <div class="flex-1 bg-cyan-500/40"></div>
-                    <div class="flex-1 bg-cyan-500/40"></div>
-                    <div class="flex-1 bg-slate-800"></div>
-                    <div class="flex-1 bg-slate-800"></div>
-                </div>
-            </div>
-
-            <!-- MEMORY PANEL -->
-            <div class="col-span-12 md:col-span-5 row-span-3 panel p-6 flex flex-col justify-between">
-                <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-cyan-500/70 flex items-center gap-2">
-                    <i data-lucide="database" class="w-4 h-4"></i> Memory Allocation
-                </h2>
-                <div class="flex items-center gap-6">
-                    <div class="relative w-24 h-24">
-                        <svg class="w-full h-full transform -rotate-90">
-                            <circle cx="48" cy="48" r="40" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" />
-                            <circle id="ram-circle" cx="48" cy="48" r="40" stroke="var(--cyan)" stroke-width="8" fill="transparent" 
-                                stroke-dasharray="251.2" stroke-dashoffset="175" class="stat-circle" />
-                        </svg>
-                        <div class="absolute inset-0 flex items-center justify-center text-xs mono font-bold" id="ram-percent">30%</div>
-                    </div>
-                    <div class="flex-1 space-y-2">
-                        <div class="flex justify-between text-[10px] mono text-slate-500"><span>USED</span><span id="ram-used" class="text-white">2.4 GB</span></div>
-                        <div class="h-1 bg-slate-900 rounded-full overflow-hidden">
-                            <div id="ram-bar" class="h-full bg-cyan-500" style="width: 30%"></div>
-                        </div>
-                        <div class="flex justify-between text-[10px] mono text-slate-500"><span>TOTAL</span><span id="ram-total" class="text-white">7.87 GB</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STORAGE & NETWORK PANEL -->
-            <div class="col-span-12 md:col-span-4 row-span-3 panel p-6 flex flex-col gap-6">
-                <div>
-                    <h2 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-3 flex items-center gap-2">
-                        <i data-lucide="hard-drive" class="w-3 h-3"></i> Drive Vol 01
-                    </h2>
-                    <div class="flex justify-between items-baseline mb-1">
-                        <span id="disk-val" class="text-2xl font-black italic tracking-tight text-white">20.6%</span>
-                        <span class="text-[8px] mono text-slate-600">USED CAPACITY</span>
-                    </div>
-                    <div class="h-1 bg-slate-900 rounded-full overflow-hidden">
-                        <div id="disk-bar" class="h-full bg-slate-500" style="width: 20.6%"></div>
-                    </div>
-                </div>
-                <div class="h-px bg-cyan-500/10"></div>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center">
-                        <div class="flex flex-col">
-                            <span class="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Download</span>
-                            <span id="net-rx" class="text-sm mono font-bold text-cyan-500">0 MB</span>
-                        </div>
-                        <i data-lucide="arrow-down" class="w-4 h-4 text-cyan-500/40"></i>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div class="flex flex-col">
-                            <span class="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Upload</span>
-                            <span id="net-tx" class="text-sm mono font-bold text-pink-500">0 MB</span>
-                        </div>
-                        <i data-lucide="arrow-up" class="w-4 h-4 text-pink-500/40"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CONTROLS PANEL -->
-            <div class="col-span-12 md:col-span-3 row-span-3 panel p-6 flex flex-col justify-between">
-                <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-cyan-500/70 flex items-center gap-2">
-                    <i data-lucide="zap" class="w-4 h-4"></i> Power Override
-                </h2>
-                <div class="space-y-3">
-                    <button onclick="handleControl('restart')" class="cyber-button cyber-button-cyan w-full py-4 flex items-center justify-center gap-2">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Restart Node
-                    </button>
-                    <button onclick="handleControl('shutdown')" class="cyber-button cyber-button-pink w-full py-4 flex items-center justify-center gap-2">
-                        <i data-lucide="power" class="w-4 h-4"></i> Kill Process
-                    </button>
-                </div>
-                <div class="text-[8px] mono text-slate-600 text-center uppercase tracking-widest">Auth Required // Secure Line</div>
+            <div id="login-error" class="hidden text-center text-red-500 text-[10px] font-bold uppercase tracking-widest">
+                Access Denied: Invalid Credentials
             </div>
         </div>
+    </div>
 
-        <!-- FOOTER BAR -->
-        <footer class="flex justify-between items-center px-4 py-2 border-t border-cyan-500/10 text-[10px] mono text-slate-600">
-            <div class="flex gap-8">
-                <span>LOCAL_HOST: 192.168.0.6</span>
-                <span>ARCH: ARM64_V8</span>
-                <span>KERNEL: 5.10.0-RPI-CORE</span>
+    <!-- MAIN INTERFACE (HIDDEN BY DEFAULT) -->
+    <div id="main-interface" class="hidden max-w-[1400px] mx-auto h-full flex flex-col space-y-4 md:space-y-8">
+        <!-- HEADER -->
+        <header class="flex flex-col lg:flex-row justify-between items-center gap-4 lg:gap-6">
+            <div class="flex flex-col items-center lg:items-start space-y-1">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 md:w-10 md:h-10 bg-cyan-500 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+                        <i data-lucide="shield" class="w-5 h-5 md:w-6 md:h-6 text-black"></i>
+                    </div>
+                    <h1 class="text-xl md:text-3xl font-extrabold tracking-tight text-white uppercase italic">Nexus<span class="text-cyan-500">Command</span></h1>
+                </div>
+                <div class="flex items-center gap-2 mono text-[8px] md:text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+                    <span class="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                    Node: <span id="sys-hostname" class="text-cyan-500">-</span> // <span id="sys-os">-</span>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
-                <span id="status-text">SYSTEM_NOMINAL</span>
-                <div class="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_#00f2ff]"></div>
+
+            <nav class="glass-card p-1 flex gap-1 md:gap-2">
+                <button onclick="showPage('dashboard')" id="nav-dashboard" class="nav-link active">Dash</button>
+                <button onclick="showPage('processes')" id="nav-processes" class="nav-link">Proc</button>
+                <button onclick="showPage('network')" id="nav-network" class="nav-link">Net</button>
+                <button onclick="showPage('settings')" id="nav-settings" class="nav-link">Set</button>
+            </nav>
+        </header>
+
+        <!-- DASHBOARD GRID -->
+        <main class="flex-1 min-h-0 relative">
+            <!-- PAGE: DASHBOARD -->
+            <div id="page-dashboard" class="page active">
+                <div class="grid grid-cols-12 gap-4 md:gap-6">
+                    <!-- SYSTEM VITALS -->
+                    <div class="col-span-12 lg:col-span-6 space-y-4 md:space-y-6">
+                        <section class="glass-card p-5 md:p-8 space-y-6">
+                            <div class="flex justify-between items-center">
+                                <div class="space-y-1">
+                                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Compute Engine</h2>
+                                    <div class="flex items-baseline gap-2">
+                                        <span id="cpu-total" class="stat-value text-white">0%</span>
+                                        <span class="text-[10px] md:text-xs font-bold text-cyan-500 mono" id="cpu-freq">-- MHz</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="cpu" class="w-6 h-6 md:w-8 md:h-8 text-cyan-500"></i>
+                            </div>
+                            <div id="cpu-cores-container" class="grid grid-cols-2 gap-3 md:gap-4"></div>
+                            <div class="pt-6 border-t border-white/5 grid grid-cols-3 gap-2">
+                                <div class="text-center">
+                                    <div class="text-[8px] font-bold text-slate-500 uppercase mb-1">1m</div>
+                                    <div id="load-1" class="mono text-xs font-bold text-white">0.00</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-[8px] font-bold text-slate-500 uppercase mb-1">5m</div>
+                                    <div id="load-5" class="mono text-xs font-bold text-white">0.00</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-[8px] font-bold text-slate-500 uppercase mb-1">15m</div>
+                                    <div id="load-15" class="mono text-xs font-bold text-white">0.00</div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="glass-card p-5 md:p-8 space-y-6">
+                            <div class="flex justify-between items-center">
+                                <div class="space-y-1">
+                                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Environmental</h2>
+                                    <span id="sys-temp" class="stat-value text-white">--°C</span>
+                                </div>
+                                <i data-lucide="thermometer" class="w-6 h-6 md:w-8 md:h-8 text-orange-500"></i>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2 md:gap-3">
+                                <div class="core-box text-center">
+                                    <div class="text-[7px] font-bold text-slate-500 uppercase mb-1">Voltage</div>
+                                    <div id="pwr-uv" class="text-[9px] font-bold mono uppercase">Nominal</div>
+                                </div>
+                                <div class="core-box text-center">
+                                    <div class="text-[7px] font-bold text-slate-500 uppercase mb-1">Thermal</div>
+                                    <div id="pwr-tl" class="text-[9px] font-bold mono uppercase">Nominal</div>
+                                </div>
+                                <div class="core-box text-center">
+                                    <div class="text-[7px] font-bold text-slate-500 uppercase mb-1">Throt</div>
+                                    <div id="pwr-tr" class="text-[9px] font-bold mono uppercase">Nominal</div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- MEMORY & STORAGE -->
+                    <div class="col-span-12 lg:col-span-6 space-y-4 md:space-y-6">
+                        <section class="glass-card p-5 md:p-8 space-y-8">
+                            <div class="flex justify-between items-center">
+                                <div class="space-y-1">
+                                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Memory Matrix</h2>
+                                    <div class="flex items-baseline gap-2">
+                                        <span id="ram-percent" class="stat-value text-white">0%</span>
+                                        <span class="text-[10px] md:text-xs font-bold text-purple-500 mono" id="ram-summary">0 / 0 GB</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="database" class="w-6 h-6 md:w-8 md:h-8 text-purple-500"></i>
+                            </div>
+                            <div class="space-y-6">
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-[8px] font-bold uppercase text-slate-500">
+                                        <span>RAM</span>
+                                        <span id="ram-val-text" class="text-white">0%</span>
+                                    </div>
+                                    <div class="progress-track"><div id="ram-bar" class="progress-fill" style="width: 0%"></div></div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-[8px] font-bold uppercase text-slate-500">
+                                        <span>SWAP</span>
+                                        <span id="swap-val-text" class="text-white">0%</span>
+                                    </div>
+                                    <div class="progress-track"><div id="swap-bar" class="progress-fill !bg-purple-600 shadow-[0_0_10px_rgba(147,51,234,0.3)]" style="width: 0%"></div></div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="glass-card p-5 md:p-8 space-y-6">
+                            <div class="flex justify-between items-center">
+                                <div class="space-y-1">
+                                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Storage Array</h2>
+                                    <div class="flex items-baseline gap-2">
+                                        <span id="disk-percent" class="stat-value text-white">0%</span>
+                                        <span class="text-[10px] md:text-xs font-bold text-emerald-500 mono" id="disk-summary">0 GB Free</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="hard-drive" class="w-6 h-6 md:w-8 md:h-8 text-emerald-500"></i>
+                            </div>
+                            <div class="progress-track"><div id="disk-bar" class="progress-fill !bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)]" style="width: 0%"></div></div>
+                            <div class="grid grid-cols-2 gap-3 md:gap-4">
+                                <div class="core-box">
+                                    <div class="text-[7px] font-bold text-slate-500 uppercase mb-1">Read</div>
+                                    <div id="io-read" class="text-xs font-bold mono text-white">0.0 MB</div>
+                                </div>
+                                <div class="core-box">
+                                    <div class="text-[7px] font-bold text-slate-500 uppercase mb-1">Write</div>
+                                    <div id="io-write" class="text-xs font-bold mono text-white">0.0 MB</div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE: PROCESSES -->
+            <div id="page-processes" class="page">
+                <section class="glass-card overflow-hidden">
+                    <div class="p-6 md:p-8 border-b border-white/5 flex justify-between items-center">
+                        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Active Processes</h2>
+                    </div>
+                    <div id="process-list" class="divide-y divide-white/5"></div>
+                </section>
+            </div>
+
+            <!-- PAGE: NETWORK -->
+            <div id="page-network" class="page">
+                <section class="glass-card overflow-hidden">
+                    <div class="p-6 md:p-8 border-b border-white/5 flex justify-between items-center">
+                        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Data Interfaces</h2>
+                    </div>
+                    <div id="net-list" class="divide-y divide-white/5"></div>
+                </section>
+            </div>
+
+            <!-- PAGE: SETTINGS -->
+            <div id="page-settings" class="page">
+                <div class="space-y-4 md:space-y-6">
+                    <section class="glass-card p-6 md:p-8">
+                        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">System Control</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="handleControl('restart')" class="cyber-btn btn-primary py-4">
+                                <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Restart
+                            </button>
+                            <button onclick="handleControl('shutdown')" class="cyber-btn btn-danger py-4">
+                                <i data-lucide="power" class="w-4 h-4"></i> Shutdown
+                            </button>
+                        </div>
+                    </section>
+                    <section class="glass-card p-6 md:p-8">
+                        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Interface Node</h2>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+                                <div class="text-[8px] font-bold text-slate-500 mb-1 uppercase tracking-widest">IP Endpoint</div>
+                                <div class="mono text-cyan-500 text-sm">192.168.0.6</div>
+                            </div>
+                            <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+                                <div class="text-[8px] font-bold text-slate-500 mb-1 uppercase tracking-widest">Security Protocol</div>
+                                <div class="mono text-white text-sm">X-API-KEY ACTIVE</div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="flex flex-col md:flex-row justify-between items-center gap-4 py-4 md:py-6 border-t border-white/5">
+            <div class="flex gap-6 md:gap-12">
+                <div class="space-y-1">
+                    <div class="text-[7px] font-bold text-slate-500 uppercase tracking-widest">Kernel</div>
+                    <div id="sys-kernel" class="mono text-[10px] md:text-sm font-bold text-white">-</div>
+                </div>
+                <div class="space-y-1">
+                    <div class="text-[7px] font-bold text-slate-500 uppercase tracking-widest">Boot</div>
+                    <div id="sys-boot" class="mono text-[10px] md:text-sm font-bold text-white">-</div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
+                <div id="status-dot" class="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_10px_var(--primary)] animate-pulse"></div>
+                <span id="status-text" class="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-cyan-500">Online</span>
             </div>
         </footer>
     </div>
@@ -211,114 +438,191 @@ rm: uppercase;
     <script>
         lucide.createIcons();
 
-        const API_URL = "http://192.168.0.6:5001/api/v1/status";
+        const API_BASE = "http://192.168.0.6:5001/api/v1";
         const API_KEY = "CHANGE_THIS_TOKEN_123";
 
-        // Detect if we are on HTTPS to warn about Mixed Content
-        const IS_HTTPS = window.location.protocol === 'https:';
-
-        async function fetchSystemStatus() {
-            try {
-                // If the user is on HTTPS (like Replit's webview), 
-                // fetching an HTTP IP address will be blocked by the browser.
-                if (IS_HTTPS && !window.location.hostname.includes('192.168.0.6')) {
-                    document.getElementById('status-text').innerText = "HTTPS_BLOCK_ERROR";
-                    document.getElementById('status-text').classList.add('text-red-500');
-                    console.warn("Mixed Content: Browser blocks HTTP fetches from HTTPS pages. Access the dashboard via HTTP or use a proxy.");
-                    return;
-                }
-
-                const response = await fetch(API_URL, {
-                    headers: {
-                        "X-API-KEY": API_KEY,
-                        "Accept": "application/json"
-                    }
-                });
-                
-                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-                
-                const stats = await response.json();
-                updateDashboard(stats);
-                document.getElementById('status-text').innerText = "SYSTEM_NOMINAL";
-                document.getElementById('status-text').classList.remove('text-red-500');
-            } catch (error) {
-                console.error("Fetch failed:", error);
-                document.getElementById('status-text').innerText = "CONNECTION_LOST";
-                document.getElementById('status-text').classList.add('text-red-500');
+        function handleLogin() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            const err = document.getElementById('login-error');
+            
+            if (u === 'admin' && p === 'adminisgaefr') {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-interface').classList.remove('hidden');
+                initSystem();
+            } else {
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 3000);
             }
         }
 
-        function updateDashboard(stats) {
-            // CPU
-            document.getElementById('cpu-val').innerHTML = `${stats.cpu_percent.toFixed(1)}<span class="text-2xl text-slate-600 font-normal ml-2">%</span>`;
-            document.getElementById('cpu-bar').style.width = `${Math.max(stats.cpu_percent, 2)}%`;
-
-            // Temperature
-            const tempMatch = stats.temperature.match(/temp=([\d.]+)'C/);
-            const temp = tempMatch ? tempMatch[1] : '0';
-            document.getElementById('temp-val').innerHTML = `${temp}<span class="text-xl text-slate-600 font-normal ml-1">°C</span>`;
-
-            // RAM
-            document.getElementById('ram-percent').innerText = `${Math.round(stats.ram.percent)}%`;
-            document.getElementById('ram-used').innerText = `${stats.ram.used_gb.toFixed(2)} GB`;
-            document.getElementById('ram-total').innerText = `${stats.ram.total_gb.toFixed(2)} GB`;
-            document.getElementById('ram-bar').style.width = `${stats.ram.percent}%`;
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             
-            const circumference = 251.2;
-            const offset = circumference - (stats.ram.percent / 100) * circumference;
-            document.getElementById('ram-circle').style.strokeDashoffset = offset;
-
-            // Disk
-            document.getElementById('disk-val').innerText = `${stats.disk.percent.toFixed(1)}%`;
-            document.getElementById('disk-bar').style.width = `${stats.disk.percent}%`;
-
-            // Network
-            document.getElementById('net-rx').innerText = `${stats.network.rx_mb.toLocaleString()} MB`;
-            document.getElementById('net-tx').innerText = `${stats.network.tx_mb.toLocaleString()} MB`;
-
-            // Uptime
-            const s = stats.uptime_seconds;
-            const d = Math.floor(s / (3600*24));
-            const h = Math.floor(s % (3600*24) / 3600);
-            const m = Math.floor(s % 3600 / 60);
-            document.getElementById('uptime').innerText = `${d.toString().padStart(2, '0')}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m`;
+            const page = document.getElementById(`page-${pageId}`);
+            const link = document.getElementById(`nav-${pageId}`);
+            if (page) page.classList.add('active');
+            if (link) link.classList.add('active');
         }
 
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toTimeString().split(' ')[0];
+        async function fetchSystemData() {
+            try {
+                const response = await fetch(`${API_BASE}/system`, {
+                    headers: { "X-API-KEY": API_KEY, "Accept": "application/json" }
+                });
+                if (!response.ok) throw new Error(`HTTP: ${response.status}`);
+                const data = await response.json();
+                updateUI(data);
+                setStatus(true);
+            } catch (err) {
+                console.error("Link Error:", err);
+                setStatus(false);
+            }
+        }
+
+        function setStatus(online) {
+            const dot = document.getElementById('status-dot');
+            const text = document.getElementById('status-text');
+            if (!dot || !text) return;
+            
+            if (online) {
+                dot.className = "w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_10px_#00f2ff] animate-pulse";
+                text.innerText = "Online";
+                text.className = "text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-cyan-500";
+            } else {
+                dot.className = "w-2 h-2 rounded-full bg-red-500 shadow-[0_0_10px_#ff0055]";
+                text.innerText = "Offline";
+                text.className = "text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-red-500";
+            }
+        }
+
+        function updateUI(data) {
+            const setText = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = val;
+            };
+
+            const setHTML = (id, html) => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = html;
+            };
+
+            const setWidth = (id, width) => {
+                const el = document.getElementById(id);
+                if (el) el.style.width = width;
+            };
+
+            setText('sys-hostname', data.system.hostname);
+            setText('sys-os', data.system.os.split(' ')[0]);
+            setText('sys-kernel', data.system.kernel.split('+')[0]);
+            setText('sys-boot', data.system.boot_time.replace('T', ' '));
+
+            setText('cpu-total', `${data.cpu.total_percent.toFixed(1)}%`);
+            setText('cpu-freq', `${data.cpu.freq_mhz.toFixed(0)} MHz`);
+            setText('load-1', data.cpu.load_avg[0].toFixed(2));
+            setText('load-5', data.cpu.load_avg[1].toFixed(2));
+            setText('load-15', data.cpu.load_avg[2].toFixed(2));
+            
+            setHTML('cpu-cores-container', data.cpu.per_core.map((load, i) => `
+                <div class="space-y-1.5">
+                    <div class="flex justify-between text-[7px] font-bold uppercase text-slate-500">
+                        <span>C${i}</span>
+                        <span class="text-white">${load.toFixed(0)}%</span>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill" style="width: ${load}%"></div></div>
+                </div>
+            `).join(''));
+
+            const ram = data.memory.ram;
+            setText('ram-percent', `${ram.percent.toFixed(1)}%`);
+            setText('ram-summary', `${ram.used_gb.toFixed(1)} / ${ram.total_gb.toFixed(0)} GB`);
+            setText('ram-val-text', `${ram.percent.toFixed(0)}%`);
+            setWidth('ram-bar', `${ram.percent}%`);
+            
+            const swap = data.memory.swap;
+            setText('swap-val-text', `${swap.percent.toFixed(0)}%`);
+            setWidth('swap-bar', `${swap.percent}%`);
+
+            setText('sys-temp', `${data.power.temperature_c.toFixed(1)}°C`);
+            
+            const uv = document.getElementById('pwr-uv');
+            if (uv) {
+                uv.innerText = data.power.under_voltage ? "Low" : "Norm";
+                uv.className = `text-[9px] font-bold mono uppercase ${data.power.under_voltage ? 'text-red-500' : 'text-cyan-500'}`;
+            }
+            
+            const tl = document.getElementById('pwr-tl');
+            if (tl) {
+                tl.innerText = data.power.thermal_limit ? "Limit" : "Norm";
+                tl.className = `text-[9px] font-bold mono uppercase ${data.power.thermal_limit ? 'text-orange-500' : 'text-cyan-500'}`;
+            }
+
+            const tr = document.getElementById('pwr-tr');
+            if (tr) {
+                tr.innerText = data.power.throttled ? "Actv" : "Norm";
+                tr.className = `text-[9px] font-bold mono uppercase ${data.power.throttled ? 'text-orange-500' : 'text-cyan-500'}`;
+            }
+
+            const root = data.disk.root;
+            setText('disk-percent', `${root.percent.toFixed(1)}%`);
+            setText('disk-summary', `${root.free_gb.toFixed(1)} GB`);
+            setWidth('disk-bar', `${root.percent}%`);
+            setText('io-read', `${data.disk.io.read_mb.toFixed(1)} MB`);
+            setText('io-write', `${data.disk.io.write_mb.toFixed(1)} MB`);
+
+            setHTML('net-list', Object.entries(data.network).map(([name, iface]) => `
+                <div class="p-4 md:p-6 flex justify-between items-center group hover:bg-white/[0.02] transition-colors">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-white uppercase tracking-tight">${name}</span>
+                            <span class="text-[7px] px-1.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-500 font-extrabold uppercase">${iface.state}</span>
+                        </div>
+                        <div class="text-[9px] mono text-slate-500">${iface.ip}</div>
+                    </div>
+                    <div class="flex gap-4 md:gap-8 text-right">
+                        <div class="space-y-0.5">
+                            <div class="text-[7px] font-bold text-slate-600 uppercase">RX</div>
+                            <div class="mono text-[10px] font-bold text-cyan-500">${iface.rx_mb.toFixed(1)}M</div>
+                        </div>
+                        <div class="space-y-0.5">
+                            <div class="text-[7px] font-bold text-slate-600 uppercase">TX</div>
+                            <div class="mono text-[10px] font-bold text-purple-500">${iface.tx_mb.toFixed(1)}M</div>
+                        </div>
+                    </div>
+                </div>
+            `).join(''));
+
+            setHTML('process-list', data.processes.top_cpu.slice(0, 15).map(p => `
+                <div class="p-4 md:p-6 flex justify-between items-center group hover:bg-white/[0.02] transition-colors">
+                    <div class="space-y-1">
+                        <div class="text-xs font-bold text-white tracking-tight">${p.name}</div>
+                        <div class="text-[8px] mono text-slate-500 uppercase">PID ${p.pid}</div>
+                    </div>
+                    <div class="text-right space-y-0.5">
+                        <div class="text-xs font-black text-cyan-500 mono">${p.cpu.toFixed(1)}%</div>
+                        <div class="text-[9px] mono text-slate-600">${p.ram_mb.toFixed(0)} MB</div>
+                    </div>
+                </div>
+            `).join(''));
         }
 
         async function handleControl(action) {
-            const confirmed = confirm(`CRITICAL: INITIATE SYSTEM ${action.toUpperCase()}?`);
-            if (confirmed) {
-                try {
-                    const response = await fetch(`http://192.168.0.6:5001/api/v1/control`, {
-                        method: 'POST',
-                        headers: {
-                            'X-API-KEY': API_KEY,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ action: action === 'restart' ? 'reboot' : 'shutdown' })
-                    });
-                    if (response.ok) {
-                        alert(`COMMAND TRANSMITTED: ${action.toUpperCase()}`);
-                    } else {
-                        alert(`COMMAND FAILED: ${response.status}`);
-                    }
-                } catch (error) {
-                    alert(`CONNECTION ERROR: ${error.message}`);
-                }
-            }
+            if (!confirm(`AUTHORIZED OVERRIDE: INITIATE SYSTEM ${action.toUpperCase()}?`)) return;
+            try {
+                await fetch(`${API_BASE}/control`, {
+                    method: 'POST',
+                    headers: { 'X-API-KEY': API_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: action === 'restart' ? 'reboot' : 'shutdown' })
+                });
+                alert(`COMMAND TRANSMITTED: ${action.toUpperCase()}`);
+            } catch (err) { alert(`FAIL: ${err.message}`); }
         }
 
-        // Initial setup
-        updateClock();
-        setInterval(updateClock, 1000);
-        
-        // Auto-update loop (every 2 seconds)
-        fetchSystemStatus();
-        setInterval(fetchSystemStatus, 2000);
+        function initSystem() {
+            fetchSystemData();
+            setInterval(fetchSystemData, 2000);
+        }
     </script>
 </body>
 </html>
