@@ -283,7 +283,30 @@
     <script>
         lucide.createIcons();
 
-        const data = {"cpu_percent":0.0,"disk":{"percent":20.6},"network":{"rx_mb":10769.53,"tx_mb":5866.97},"ram":{"percent":30.5,"total_gb":7.87,"used_gb":2.4},"temperature":"temp=46.1'C","uptime_seconds":1023183};
+        const API_URL = "http://192.168.0.6:5001/api/v1/status";
+        const API_KEY = "CHANGE_THIS_TOKEN_123";
+
+        async function fetchSystemStatus() {
+            try {
+                const response = await fetch(API_URL, {
+                    headers: {
+                        "X-API-KEY": API_KEY,
+                        "Accept": "application/json"
+                    }
+                });
+                
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+                
+                const stats = await response.json();
+                updateDashboard(stats);
+                document.getElementById('status-text').innerText = "SYSTEM_NOMINAL";
+                document.getElementById('status-text').classList.remove('text-red-500');
+            } catch (error) {
+                console.error("Fetch failed:", error);
+                document.getElementById('status-text').innerText = "CONNECTION_LOST";
+                document.getElementById('status-text').classList.add('text-red-500');
+            }
+        }
 
         function updateDashboard(stats) {
             // CPU
@@ -326,24 +349,36 @@
             document.getElementById('clock').innerText = now.toTimeString().split(' ')[0];
         }
 
-        function handleControl(action) {
+        async function handleControl(action) {
             const confirmed = confirm(`CRITICAL: INITIATE SYSTEM ${action.toUpperCase()}?`);
             if (confirmed) {
-                alert(`COMMAND TRANSMITTED: ${action.toUpperCase()}`);
-                // In a real scenario, this would call your API
+                try {
+                    const response = await fetch(`http://192.168.0.6:5001/api/v1/control`, {
+                        method: 'POST',
+                        headers: {
+                            'X-API-KEY': API_KEY,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ action: action === 'restart' ? 'reboot' : 'shutdown' })
+                    });
+                    if (response.ok) {
+                        alert(`COMMAND TRANSMITTED: ${action.toUpperCase()}`);
+                    } else {
+                        alert(`COMMAND FAILED: ${response.status}`);
+                    }
+                } catch (error) {
+                    alert(`CONNECTION ERROR: ${error.message}`);
+                }
             }
         }
 
-        updateDashboard(data);
-        setInterval(updateClock, 1000);
+        // Initial setup
         updateClock();
-
-        // Subtle UI fluctuation simulation
-        setInterval(() => {
-            const simData = {...data};
-            simData.cpu_percent = Math.random() * 8 + 2;
-            updateDashboard(simData);
-        }, 3000);
+        setInterval(updateClock, 1000);
+        
+        // Auto-update loop (every 2 seconds)
+        fetchSystemStatus();
+        setInterval(fetchSystemStatus, 2000);
     </script>
 </body>
 </html>
