@@ -286,8 +286,20 @@
         const API_URL = "http://192.168.0.6:5001/api/v1/status";
         const API_KEY = "CHANGE_THIS_TOKEN_123";
 
+        // Detect if we are on HTTPS to warn about Mixed Content
+        const IS_HTTPS = window.location.protocol === 'https:';
+
         async function fetchSystemStatus() {
             try {
+                // If the user is on HTTPS (like Replit's webview), 
+                // fetching an HTTP IP address will be blocked by the browser.
+                if (IS_HTTPS && !window.location.hostname.includes('192.168.0.6')) {
+                    document.getElementById('status-text').innerText = "HTTPS_BLOCK_ERROR";
+                    document.getElementById('status-text').classList.add('text-red-500');
+                    console.warn("Mixed Content: Browser blocks HTTP fetches from HTTPS pages. Access the dashboard via HTTP or use a proxy.");
+                    return;
+                }
+
                 const response = await fetch(API_URL, {
                     headers: {
                         "X-API-KEY": API_KEY,
